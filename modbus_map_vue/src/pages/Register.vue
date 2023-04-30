@@ -1,0 +1,145 @@
+<script setup>
+    import { ref, reactive, onMounted, computed } from 'vue';
+    import Pagination from '../components/Pagination.vue'
+
+    const url = ref('http://127.0.0.1:8000/api/register/')
+
+    const registerList = reactive({
+        data: [],
+        registers: []
+    });
+
+    const dataTypeList = reactive({
+        data_types: []
+    });
+
+    const levelList = reactive ({
+        name: ['INPUT', 'HOLDING']
+    });
+
+    const newRegister = reactive({
+        name: "",
+        description: "",
+        level: 'Select level',
+        data_type: 'Select data type'
+    });
+
+    const loadRegisters = async (pageURL) => {
+        const url = pageURL || 'http://127.0.0.1:8000/api/register/'
+        const resp = await fetch(url);
+        const registers = await resp.json();
+
+        registerList.data = registers;
+        registerList.registers = registers.results;
+    };
+
+    const loadDataTypes = async () => {
+        const resp = await fetch('http://127.0.0.1:8000/api/data_type/');
+        const data_types = await resp.json();
+
+        dataTypeList.data_types = data_types.results;
+    };
+
+    onMounted(() => {
+        loadRegisters();
+        loadDataTypes();
+    });
+
+    const submitForm = async () => {
+        const resp = await fetch("http://127.0.0.1:8000/api/register/", {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: newRegister.name,
+                description: newRegister.description,
+                level: newRegister.level,
+                data_type: newRegister.data_type
+            })
+        });
+        loadRegisters();
+    };
+
+    const deleteRegister = (id) => {
+        fetch(`http://127.0.0.1:8000/api/register/${id}`, {
+            method: 'DELETE'
+        });
+        loadRegisters();
+    };
+
+    const isAuthenticated = computed(() => {
+        return localStorage.getItem('access_token') !== null;
+    });
+</script>
+
+<template>
+    <div>
+        <div class='container'>
+            <h2>Register list</h2>
+            <Pagination
+                :url='url'
+                :next='registerList.data.next'
+                :previous='registerList.data.previous'
+                :count=registerList.data.count
+                @page-changed='loadRegisters'
+            />
+            <table class="table" style='width: 60rem;'>
+                <thead>
+                    <tr>
+                        <th scope="col">Register</th>
+                        <th scope="col">Data Type</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for='register in registerList.registers' :key='register.id'>
+                        <th scope='row'>{{ register.name }}</th>
+                        <td v-if='register.data_type === 1'>INT</td>
+                        <td v-else-if='register.data_type === 2'>WORD</td>
+                        <td v-else='register.data_type === 3'>REAL</td>
+                        <td>{{ register.description }}</td>
+                        <td v-if="register.level === 'I'">INPUT</td>
+                        <td v-else="register.level === 'H'">HOLDING</td>
+                        <button v-if='isAuthenticated' v-on:click='deleteRegister(register.id)'>Delete</button>
+                    </tr>
+                </tbody>
+            </table>
+            <div v-if='isAuthenticated'>
+                <h2>Add new register</h2>
+                <div class='card' style='width: 55rem;'>
+                    <form class="row g-3" v-on:submit.prevent='submitForm'>
+                        <div class="col-12">
+                            <label class="form-label me-3">Name</label>
+                            <p><input v-model="newRegister.name" placeholder="Name"></p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label me-3">Data Type</label>
+                            <select v-model="newRegister.data_type" class='form-select'>
+                                <option selected>Select data type</option>
+                                <option v-for='data_type in dataTypeList.data_types' :key='data_type.id' v-bind:value="data_type.id">
+                                    {{ data_type.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label me-3">Description</label>
+                            <textarea class='form-control' v-model="newRegister.description"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label me-3">Level</label>
+                            <select v-model="newRegister.level" class='form-select'>
+                                <option selected>Select level</option>
+                                <option v-for='level in levelList.name' v-bind:value="level.slice(0, 1)">
+                                    {{ level }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type='submit' class='btn btn-primary'>Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

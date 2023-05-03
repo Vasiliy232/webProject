@@ -1,30 +1,26 @@
 <script setup>
-    import { reactive } from 'vue';
-    import { useRouter } from 'vue-router';
+  import { reactive } from 'vue';
+  import { useStore } from 'vuex';
+  import { useRouter } from 'vue-router';
 
-    const router = useRouter()
+  const router = useRouter()
+  const store = useStore()
 
-    const user = reactive({
-        username: '',
-        password: ''
+  const user = reactive({
+    username: '',
+    password: ''
+  });
+
+  const login = async () => {
+    await store.dispatch('loginUser', user);
+
+    user.username = '';
+    user.password = '';
+
+    router.push({
+      path: '/'
     });
-
-    const login = async () => {
-        const resp = await fetch('http://127.0.0.1:8000/user/login/', {
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(user)
-        });
-        const data = await resp.json();
-        localStorage.setItem('access_token', data.token);
-
-        user.username = '';
-        user.password = '';
-
-        router.push({
-            path: '/'
-        });
-    };
+  };
 </script>
 
 <template>

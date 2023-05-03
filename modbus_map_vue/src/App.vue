@@ -1,36 +1,34 @@
 <script setup>
-    import { computed } from 'vue';
-    import Logout from './components/Logout.vue';
+  import Logout from './components/Logout.vue';
+  import { useStore } from 'vuex';
 
-    const isAuthenticated = computed(() => {
-        return localStorage.getItem('access_token') !== null;
-    });
+  const store = useStore();
 </script>
 
 <template>
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <router-link to='/structures' class='nav-link'>Structures</router-link>
-        </li>
-        <li class="nav-item">
-            <router-link to='/registers' class='nav-link'>Registers</router-link>
-        </li>
-        <li class="nav-item">
-            <router-link to='/datatypes' class='nav-link'>Data types</router-link>
-        </li>
-    </ul>
-    <ul class="nav nav-tabs top-right-corner">
-        <li class="nav-item" v-if='!isAuthenticated'>
-            <router-link to='/registration' class='nav-link'>Sign up</router-link>
-        </li>
-        <li class="nav-item" v-if='isAuthenticated'>
-            <Logout />
-        </li>
-        <li class="nav-item" v-else>
-            <router-link to='/login' class='nav-link'>Log in</router-link>
-        </li>
-    </ul>
-    <router-view></router-view>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <router-link to='/structures' class='nav-link'>Structures</router-link>
+    </li>
+    <li class="nav-item">
+      <router-link to='/registers' class='nav-link'>Registers</router-link>
+    </li>
+    <li class="nav-item">
+      <router-link to='/datatypes' class='nav-link'>Data types</router-link>
+    </li>
+  </ul>
+  <ul class="nav nav-tabs top-right-corner">
+    <li class="nav-item" v-if='!store.state.isAuthenticated'>
+      <router-link to='/registration' class='nav-link'>Sign up</router-link>
+    </li>
+    <li class="nav-item" v-if='store.state.isAuthenticated'>
+      <Logout />
+    </li>
+    <li class="nav-item" v-else>
+      <router-link to='/login' class='nav-link'>Log in</router-link>
+    </li>
+  </ul>
+  <router-view></router-view>
 </template>
 
 <style scoped>

@@ -1,26 +1,26 @@
 <script setup>
-    import { reactive } from 'vue';
+  import { reactive } from 'vue';
 
-    const user = reactive({
-        username: '',
-        password: '',
-        password2: ''
+  const user = reactive({
+    username: '',
+    password: '',
+    password2: ''
+  });
+
+  const register = async () => {
+    const resp = await fetch('http://127.0.0.1:8000/api/user/register/', {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: user.name,
+        password: user.password,
+        password2: user.password2
+      })
     });
-
-    const register = async () => {
-        const resp = await fetch('http://127.0.0.1:8000/api/user/register/', {
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                username: user.name,
-                password: user.password,
-                password2: user.password2
-            })
-        });
-        user.name = '';
-        user.password = '';
-        user.password2 = '';
-    };
+    user.name = '';
+    user.password = '';
+    user.password2 = '';
+  };
 </script>
 
 <template>

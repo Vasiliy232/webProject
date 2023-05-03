@@ -22,9 +22,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class StructureSerializer(serializers.ModelSerializer):
+    input_registers_number = serializers.ReadOnlyField()
+    holding_registers_number = serializers.ReadOnlyField()
+
     class Meta:
         model = Structure
-        fields = '__all__'
+        fields = ['id', 'name', 'registers', 'input_registers_number', 'holding_registers_number']
 
 
 class SubStructureSerializer(serializers.ModelSerializer):

@@ -17,4 +17,4 @@ admin.site.register(DataType)
 
 @admin.register(Structure)
 class StructureAdmin(admin.ModelAdmin):
-    list_display = ["name", "get_input_registers_count", "get_holding_registers_count"]
+    list_display = ["name"]

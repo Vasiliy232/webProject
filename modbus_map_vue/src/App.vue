@@ -17,14 +17,16 @@
       <router-link to='/datatypes' class='nav-link'>Data types</router-link>
     </li>
   </ul>
-  <ul class="nav nav-tabs top-right-corner">
-    <li class="nav-item" v-if='!store.state.isAuthenticated'>
-      <router-link to='/registration' class='nav-link'>Sign up</router-link>
-    </li>
-    <li class="nav-item" v-if='store.state.isAuthenticated'>
+  <ul class="nav nav-tabs top-right-corner" v-if='store.state.isAuthenticated'>
+    <li class="nav-item">
       <Logout />
     </li>
-    <li class="nav-item" v-else>
+  </ul>
+  <ul class="nav nav-tabs top-right-corner" v-else>
+    <li class="nav-item">
+      <router-link to='/registration' class='nav-link'>Sign up</router-link>
+    </li>
+    <li class="nav-item">
       <router-link to='/login' class='nav-link'>Log in</router-link>
     </li>
   </ul>

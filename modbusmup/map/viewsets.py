@@ -66,7 +66,7 @@ class SubStructureMixinViewSet(
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
-    queryset = SubStructure.objects.all()
+    queryset = SubStructure.objects.all().select_related('structure')
     serializer_class = SubStructureSerializer
 
 
@@ -88,7 +88,7 @@ class RegisterMixinViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
-    queryset = Register.objects.all().order_by('-id')
+    queryset = Register.objects.all().select_related('data_type').order_by('-id')
     serializer_class = RegisterSerializer
     pagination_class = RegisterPagination
 

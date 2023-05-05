@@ -1,12 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-const Structures = () => import('../pages/Structures.vue');
+const StructureList = () => import('../pages/StructureList.vue');
 const Register = () => import('../pages/Register.vue');
 const DataType = () => import('../pages/DataType.vue');
 const Registration = () => import('../components/Registration.vue');
-const Login = () => import('../components/Login.vue');
+const Login = () => import('../pages/Login.vue');
 
 const routes = [
-  { path: '/structures', component: Structures },
+  { path: '/structures', component: StructureList },
   { path: '/registers', component: Register },
   { path: '/datatypes', component: DataType },
   { path: '/registration', component: Registration },

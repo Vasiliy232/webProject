@@ -9,12 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vue/compat": "^3.2.47",
+    "bootstrap": "^4.6.2",
+    "bootstrap-vue": "^2.23.1",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
+    "@vue/compiler-sfc": "^3.2.47",
     "vite": "^4.3.2"
   }
 }

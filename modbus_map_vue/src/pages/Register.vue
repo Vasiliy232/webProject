@@ -107,10 +107,10 @@
             <th scope='row'>{{ register.name }}</th>
             <td v-if='register.data_type === 1'>INT</td>
             <td v-else-if='register.data_type === 2'>WORD</td>
-            <td v-else='register.data_type === 3'>REAL</td>
+            <td v-else-if='register.data_type === 3'>REAL</td>
             <td>{{ register.description }}</td>
             <td v-if="register.level === 'I'">INPUT</td>
-            <td v-else="register.level === 'H'">HOLDING</td>
+            <td v-else-if="register.level === 'H'">HOLDING</td>
             <button v-if='store.state.isAuthenticated' v-on:click='deleteRegister(register.id)'>Delete</button>
           </tr>
         </tbody>
@@ -140,7 +140,7 @@
               <label class="form-label me-3">Level</label>
               <select v-model="newRegister.level" class='form-select'>
                 <option selected>Select level</option>
-                <option v-for='level in levelList.name' v-bind:value="level.slice(0, 1)">
+                <option v-for='level in levelList.name' :key='level' v-bind:value="level.slice(0, 1)">
                   {{ level }}
                 </option>
               </select>

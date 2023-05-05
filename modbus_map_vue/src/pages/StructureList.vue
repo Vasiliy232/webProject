@@ -2,9 +2,12 @@
   import { ref, reactive, onMounted, computed } from 'vue';
   import { useStore } from 'vuex';
   import Pagination from '../components/Pagination.vue';
+  import EditStructure from '../components/EditStructure.vue';
 
   const store = useStore();
   const url = ref('http://127.0.0.1:8000/api/structure/');
+
+  const editStructure = ref(EditStructure);
 
   const structureList = reactive({
     data: [],
@@ -69,6 +72,27 @@
     });
     loadStructures(url);
   };
+
+  const openEditWindow = (structure) => {
+    editStructure.structureData = structure;
+    editStructure.value.show();
+  };
+
+  const updateStructure = async (newStructure) => {
+    // const accessToken = localStorage.getItem('access_token');
+    // const resp = await fetch("http://127.0.0.1:8000/api/structure/" + `${ newStructure.id }`, {
+    //   method: 'PATCH',
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     'Authorization': `Token ${ accessToken }`
+    //   },
+    //   body: JSON.stringify({
+    //     name: newStructure.name,
+    //     registers: newStructure.registers
+    //   })
+    // });
+    console.log(newStructure);
+  };
 </script>
 
 <template>
@@ -95,10 +119,14 @@
             <th scope='row'>{{ structure.name }}</th>
             <td>{{ structure.input_registers_number }}</td>
             <td>{{ structure.holding_registers_number }}</td>
+            <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(structure)'>
+              Edit
+            </button>
             <button v-if='store.state.isAuthenticated' v-on:click.prevent='deleteStructure(structure.id)'>
               Delete
             </button>
           </tr>
+          <EditStructure ref='editStructure' v-on:structure-update='updateStructure' />
         </tbody>
       </table>
       <div v-if='store.state.isAuthenticated'>

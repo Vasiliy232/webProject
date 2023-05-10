@@ -33,8 +33,12 @@
   };
 
   const gotoPage = (page) => {
-    emits('page-changed', props.url + '?page=' + `${page}`)
+    emits('page-changed', props.url + '?page=' + `${ page }`)
   };
+
+  defineExpose({
+    currentPage
+  });
 </script>
 
 <template>

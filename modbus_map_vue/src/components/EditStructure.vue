@@ -1,60 +1,40 @@
 <script setup>
-  import { ref, reactive, watch } from 'vue';
+  import { ref } from 'vue';
 
   const props = defineProps({
     structureData: {
+      type: Object,
+      default: () => ({})
+    },
+    registersData : {
       type: Object,
       default: () => ({})
     }
   });
 
   const modalShow = ref(false);
+  const newStructure = ref({});
+  const editModal = ref();
 
   const emits = defineEmits(['structure-update']);
 
-  const newStructure = reactive({
-    structure: {}
-  });
-
-  const editModal = ref();
-
-  watch(
-    () => props.structureData,
-    () => {
-      newStructure.structure = { ...props.structureData };
-    },
-    { immediate: true }
-  );
-
   const show = () => {
+    newStructure.value = props.structureData;
     modalShow.value = true;
   };
   const hide = () => {
     modalShow.value = false;
   };
   const resetForm = () => {
-    newStructure.id = 0;
-    newStructure.name = '';
-    newStructure.registers = [];
+    newStructure.value = {};
   };
-  const submitForm = async () => {
-    const accessToken = localStorage.getItem('access_token');
-    const resp = await fetch("http://127.0.0.1:8000/api/structure/" + `${ newStructure.id }`, {
-      method: 'PATCH',
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Token ${ accessToken }`
-      },
-      body: JSON.stringify({
-        name: newStructure.name,
-        registers: newStructure.registers
-      })
-    });
-    emits('structure-update', resp.json());
+  const submitForm = () => {
+    emits('structure-update', props.structureData);
     modalShow.value = false;
   };
 
   defineExpose({
+    props,
     show
   });
 </script>
@@ -67,10 +47,16 @@
     v-on:ok='submitForm'
     v-on:hidden='resetForm'
   >
-    {{ props.structureData }}
-    <b-form v-on:submit.stop.prevent='submitForm'>
+    <b-form v-on:submit.stop.prevent='submitForm()'>
       <b-form-group label='Name'>
-        <b-form-input v-model='newStructure.name'></b-form-input>
+        <b-form-input v-model='newStructure.value.name'></b-form-input>
+      </b-form-group>
+      <b-form-group label='Registers'>
+        <b-form-select v-model="newStructure.value.registers" style='width: 29rem;' multiple>
+          <b-form-select-option v-for='register in registersData.value' :key='register.id' v-bind:value="register.id">
+            {{ register.name }}
+          </b-form-select-option>
+        </b-form-select>
       </b-form-group>
     </b-form>
   </b-modal>

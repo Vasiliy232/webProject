@@ -17,7 +17,7 @@
     user.username = '';
     user.password = '';
 
-    router.push({
+    await router.push({
       path: '/'
     });
   };

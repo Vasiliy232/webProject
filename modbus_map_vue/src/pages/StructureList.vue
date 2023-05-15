@@ -1,8 +1,11 @@
 <script setup>
-  import { ref, reactive, onMounted, computed, toRaw } from 'vue';
+  import { onMounted, reactive, ref } from 'vue';
   import { useStore } from 'vuex';
   import Pagination from '../components/Pagination.vue';
-  const EditStructure = () => import('../components/EditStructure.vue');
+  import EditStructure from '../components/EditStructure.vue';
+  import Draggable from 'vuedraggable';
+
+  Draggable.compatConfig = { MODE: 3 }
 
   const store = useStore();
 
@@ -38,14 +41,12 @@
 
   const loadRegisters = async () => {
     const resp = await fetch('http://127.0.0.1:8000/api/register/?no_pagination=true');
-    const registers = await resp.json();
-
-    registerList.registers = registers;
+    registerList.registers = await resp.json();
   };
 
   const submitForm = async () => {
     const accessToken = localStorage.getItem('access_token');
-    const resp = await fetch("http://127.0.0.1:8000/api/structure/", {
+    await fetch("http://127.0.0.1:8000/api/structure/", {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +58,7 @@
       })
     });
     newStructure.name = '';
-    loadStructures();
+    await loadStructures();
   };
 
   const deleteStructure = async (id) => {
@@ -69,7 +70,7 @@
         'Authorization': `Token ${ accessToken }`
       },
     });
-    loadStructures(url);
+    await loadStructures(url);
   };
 
   const openEditWindow = (structure) => {
@@ -81,7 +82,7 @@
   const updateStructure = async (newStructure) => {
     const url = 'http://127.0.0.1:8000/api/structure/'
     const accessToken = localStorage.getItem('access_token');
-    const resp = await fetch(url + `${ newStructure.value.id }/`, {
+    await fetch(url + `${ newStructure.value.id }/`, {
       method: 'PATCH',
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +93,7 @@
         registers: newStructure.value.registers
       })
     });
-    loadStructures(url + '?page=' + `${ pagination.value.currentPage }`);
+    await loadStructures(url + '?page=' + `${ pagination.value.currentPage }`);
   };
 </script>
 
@@ -116,19 +117,21 @@
             <th scope="col">Holding</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for='structure in structureList.structures' :key='structure.id'>
-            <th scope='row'>{{ structure.name }}</th>
-            <td>{{ structure.input_registers_number }}</td>
-            <td>{{ structure.holding_registers_number }}</td>
-            <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(structure)'>
-              Edit
-            </button>
-            <button v-if='store.state.isAuthenticated' v-on:click.prevent='deleteStructure(structure.id)'>
-              Delete
-            </button>
-          </tr>
-        </tbody>
+        <Draggable :list="structureList.structures" tag="tbody" item-key="id" >
+          <template #item="{element}">
+            <tr class="drag-item">
+              <th scope='row'>{{ element.name }}</th>
+              <td>{{ element.input_registers_number }}</td>
+              <td>{{ element.holding_registers_number }}</td>
+              <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(element)'>
+                Edit
+              </button>
+              <button v-if='store.state.isAuthenticated' v-on:click.prevent='deleteStructure(element.id)'>
+                Delete
+              </button>
+            </tr>
+          </template>
+        </Draggable>
       </table>
       <div v-if='store.state.isAuthenticated'>
         <h2>Add new structure</h2>

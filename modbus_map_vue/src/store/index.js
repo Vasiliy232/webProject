@@ -2,8 +2,9 @@ import { createStore } from 'vuex';
 
 export const store = createStore({
   state () {
+    const token = localStorage.getItem('access_token');
     return {
-      isAuthenticated: localStorage.getItem('access_token') !== null
+      isAuthenticated: token !== null && token !== 'undefined'
     }
   },
   mutations: {
@@ -20,7 +21,9 @@ export const store = createStore({
       });
       const data = await resp.json();
       localStorage.setItem('access_token', data.token);
-      commit('setIsAuthenticated', true)
+      if (data.detail !== 'Invalid credentials.') {
+        commit('setIsAuthenticated', true);
+      }
     },
     async logoutUser ({ commit }) {
       const accessToken = localStorage.getItem('access_token');

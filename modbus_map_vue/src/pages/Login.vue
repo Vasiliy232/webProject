@@ -18,7 +18,7 @@
     user.password = '';
 
     await router.push({
-      path: '/'
+      path: '/structures'
     });
   };
 </script>

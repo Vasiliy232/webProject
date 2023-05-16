@@ -4,13 +4,15 @@ const Register = () => import('../pages/Register.vue');
 const DataType = () => import('../pages/DataType.vue');
 const Registration = () => import('../components/Registration.vue');
 const Login = () => import('../pages/Login.vue');
+const StructureDetail = () => import('../pages/StructureDetail.vue');
 
 const routes = [
   { path: '/structures', component: StructureList },
   { path: '/registers', component: Register },
   { path: '/datatypes', component: DataType },
   { path: '/registration', component: Registration },
-  { path: '/login', component: Login }
+  { path: '/login', component: Login },
+  { path: '/structures/:id', name: 'structure-detail', component: StructureDetail }
 ];
 
 export const router = createRouter({

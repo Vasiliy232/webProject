@@ -5,7 +5,7 @@
   import EditStructure from '../components/EditStructure.vue';
   import Draggable from 'vuedraggable';
 
-  Draggable.compatConfig = { MODE: 3 }
+  Draggable.compatConfig = { MODE: 3 };
 
   const store = useStore();
 
@@ -23,6 +23,9 @@
   const newStructure = reactive({
     name: "",
     registers: []
+  });
+  const selectedStructure = reactive({
+    structure: {}
   });
 
   onMounted(() => {
@@ -64,7 +67,7 @@
   const deleteStructure = async (id) => {
     const url = 'http://127.0.0.1:8000/api/structure/';
     const accessToken = localStorage.getItem('access_token');
-    await fetch(url + `${id}`, {
+    await fetch(url + `${ id }`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Token ${ accessToken }`
@@ -118,9 +121,13 @@
           </tr>
         </thead>
         <Draggable :list="structureList.structures" tag="tbody" item-key="id" >
-          <template #item="{element}">
+          <template #item="{ element }">
             <tr class="drag-item">
-              <th scope='row'>{{ element.name }}</th>
+              <th scope='row'>
+                <router-link :to="{ name: 'structure-detail', params: { id: element.id } }">
+                  {{ element.name }}
+                </router-link>
+              </th>
               <td>{{ element.input_registers_number }}</td>
               <td>{{ element.holding_registers_number }}</td>
               <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(element)'>

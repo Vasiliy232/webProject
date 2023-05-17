@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, reactive, onMounted, computed } from 'vue';
+  import { onMounted, reactive, ref } from 'vue';
   import { useStore } from 'vuex';
   import Pagination from '../components/Pagination.vue';
 
@@ -37,9 +37,7 @@
 
   const loadDataTypes = async () => {
     const resp = await fetch('http://127.0.0.1:8000/api/data_type/');
-    const data_types = await resp.json();
-
-    dataTypeList.data_types = data_types;
+    dataTypeList.data_types = await resp.json();
   };
 
   onMounted(() => {
@@ -66,7 +64,7 @@
     newRegister.description = '';
     newRegister.level = 'Select level';
     newRegister.data_type = 'Select data type';
-    loadRegisters();
+    await loadRegisters();
   };
 
   const deleteRegister = async (id) => {
@@ -78,7 +76,7 @@
         'Authorization': `Token ${ accessToken }`
       },
     });
-    loadRegisters(url);
+    await loadRegisters(url);
   };
 </script>
 
@@ -123,7 +121,7 @@
               <label class="form-label me-3">Name</label>
               <p><input v-model="newRegister.name" placeholder="Name"></p>
             </div>
-            <div class="col-md-4">
+            <div class="col-12">
               <label class="form-label me-3">Data Type</label>
               <select v-model="newRegister.data_type" class='form-select'>
                 <option selected>Select data type</option>

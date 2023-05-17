@@ -1,5 +1,5 @@
 <script setup>
-  import { onMounted, reactive, ref } from 'vue';
+  import { onMounted, reactive, ref, toRaw } from 'vue';
   import { useStore } from 'vuex';
   import Pagination from '../components/Pagination.vue';
   import EditStructure from '../components/EditStructure.vue';
@@ -77,7 +77,7 @@
   };
 
   const openEditWindow = (structure) => {
-    editStructure.value.props.structureData.value = { ...structure };
+    editStructure.value.props.structureData.value = toRaw(structure);
     editStructure.value.props.registersData.value = registerList.registers;
     editStructure.value.show();
   };
@@ -148,7 +148,7 @@
               <label class="form-label me-3">Name</label>
               <p><input v-model="newStructure.name" placeholder="Name"></p>
             </div>
-            <div class="col-md-6">
+            <div class="col-12">
               <label class="form-label me-3">Registers</label>
               <select v-model="newStructure.registers" class='form-select' multiple>
                 <option v-for='register in registerList.registers' :key='register.id' v-bind:value="register.id">

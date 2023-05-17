@@ -1,6 +1,6 @@
 <script setup>
   import Draggable from 'vuedraggable';
-  import { onMounted, reactive } from "vue";
+  import { onMounted, reactive, toRaw } from "vue";
   import { useRoute } from 'vue-router';
 
   Draggable.compatConfig = { MODE: 3 };
@@ -16,18 +16,21 @@
 
   const loadStructure = async () => {
     const url =  `http://127.0.0.1:8000/api/structure/${ route.params.id }`;
-    const resp = await fetch(url);
-    structureDetail.structure = await resp.json();
-  };
+    const resp_struct = await fetch(url);
+    structureDetail.structure = await resp_struct.json();
+    const structure = toRaw(structureDetail.structure)
 
-  const loadRegisters = async () => {
-    const resp = await fetch('http://127.0.0.1:8000/api/register/?no_pagination=true');
-    registerList.registers = await resp.json();
+    const resp_reg = await fetch('http://127.0.0.1:8000/api/register/?no_pagination=true');
+    const registers = await resp_reg.json();
+    for (const index in registers) {
+      if (structure.registers.includes(registers[index].id)) {
+        registerList.registers.push(registers[index])
+      }
+    }
   };
 
   onMounted(() => {
     loadStructure();
-    loadRegisters();
   });
 </script>
 
@@ -43,9 +46,9 @@
           <th scope="col">Level</th>
         </tr>
       </thead>
-      <Draggable v-model="structureDetail.structure.registers" :list="registerList.registers" tag="tbody" item-key="id" >
+      <Draggable :list="registerList.registers" tag="tbody" item-key="id" >
         <template #item="{ element }">
-          <tr v-if="structureDetail.structure.registers.includes(element.id)" class="drag-item">
+          <tr class="drag-item">
             <th scope='row'>{{ element.name }}</th>
             <td v-if='element.data_type === 1'>INT</td>
             <td v-else-if='element.data_type === 2'>WORD</td>

@@ -8,9 +8,7 @@
   const route = useRoute();
 
   const structureDetail = reactive({
-    structure: {}
-  });
-  const registerList = reactive({
+    structure: {},
     registers: []
   });
 
@@ -24,7 +22,7 @@
     const registers = await resp_reg.json();
     for (const index in registers) {
       if (structure.registers.includes(registers[index].id)) {
-        registerList.registers.push(registers[index])
+        structureDetail.registers.push(registers[index])
       }
     }
   };
@@ -46,7 +44,7 @@
           <th scope="col">Level</th>
         </tr>
       </thead>
-      <Draggable :list="registerList.registers" tag="tbody" item-key="id" >
+      <Draggable :list="structureDetail.registers" tag="tbody" item-key="id" >
         <template #item="{ element }">
           <tr class="drag-item">
             <th scope='row'>{{ element.name }}</th>

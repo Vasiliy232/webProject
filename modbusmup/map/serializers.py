@@ -31,9 +31,17 @@ class StructureSerializer(serializers.ModelSerializer):
 
 
 class SubStructureSerializer(serializers.ModelSerializer):
+    structure = StructureSerializer()
+
     class Meta:
         model = SubStructure
         fields = '__all__'
+
+    def create(self, validated_data):
+        structure_data = validated_data.pop('structure')
+        structure = Structure.objects.get(name=structure_data['name'])
+        substructure = SubStructure.objects.create(structure=structure, **validated_data)
+        return substructure
 
 
 class StructureUnitSerializer(serializers.ModelSerializer):

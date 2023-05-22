@@ -24,9 +24,6 @@
     name: "",
     registers: []
   });
-  const selectedStructure = reactive({
-    structure: {}
-  });
 
   onMounted(() => {
     loadStructures();
@@ -120,25 +117,23 @@
             <th scope="col">Holding</th>
           </tr>
         </thead>
-        <Draggable :list="structureList.structures" tag="tbody" item-key="id" >
-          <template #item="{ element }">
-            <tr class="drag-item">
-              <th scope='row'>
-                <router-link :to="{ name: 'structure-detail', params: { id: element.id } }">
-                  {{ element.name }}
-                </router-link>
-              </th>
-              <td>{{ element.input_registers_number }}</td>
-              <td>{{ element.holding_registers_number }}</td>
-              <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(element)'>
-                Edit
-              </button>
-              <button v-if='store.state.isAuthenticated' v-on:click.prevent='deleteStructure(element.id)'>
-                Delete
-              </button>
-            </tr>
-          </template>
-        </Draggable>
+        <tbody>
+          <tr v-for="structure in structureList.structures">
+            <th scope='row'>
+              <router-link :to="{ name: 'structure-detail', params: { id: structure.id } }">
+                {{ structure.name }}
+              </router-link>
+            </th>
+            <td>{{ structure.input_registers_number }}</td>
+            <td>{{ structure.holding_registers_number }}</td>
+            <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(structure)'>
+              Edit
+            </button>
+            <button v-if='store.state.isAuthenticated' v-on:click.prevent='deleteStructure(structure.id)'>
+              Delete
+            </button>
+          </tr>
+        </tbody>
       </table>
       <div v-if='store.state.isAuthenticated'>
         <h2>Add new structure</h2>

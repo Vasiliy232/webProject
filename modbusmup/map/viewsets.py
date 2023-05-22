@@ -1,4 +1,4 @@
-from django.db.models import Sum, Case, When, F, PositiveIntegerField
+from django.db.models import Sum, Case, When, F, PositiveIntegerField, Prefetch
 from rest_framework import mixins, viewsets
 from .models import (
     Map,
@@ -16,7 +16,7 @@ from .serializers import (
     RegisterSerializer,
     DataTypeSerializer
 )
-from .pagination import StructurePagination, RegisterPagination
+from .pagination import StructurePagination, RegisterPagination, SubStructurePagination
 
 
 class MapMixinViewSet(
@@ -59,15 +59,22 @@ class StructureMixinViewSet(
             )
         )
 
+    def paginate_queryset(self, queryset):
+        if self.request.query_params.get('no_pagination') == 'true':
+            self.pagination_class = None
+        return super().paginate_queryset(queryset)
+
 
 class SubStructureMixinViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
-    queryset = SubStructure.objects.all().select_related('structure')
+    queryset = SubStructure.objects.all().prefetch_related('structure__registers').order_by('-id')
     serializer_class = SubStructureSerializer
+    pagination_class = SubStructurePagination
 
 
 class StructureUnitMixinViewSet(

@@ -8,6 +8,9 @@
 <template>
   <ul class="nav nav-tabs">
     <li class="nav-item">
+      <router-link to='/sub_structures' class='nav-link'>Substructures</router-link>
+    </li>
+    <li class="nav-item">
       <router-link to='/structures' class='nav-link'>Structures</router-link>
     </li>
     <li class="nav-item">

@@ -1,12 +1,7 @@
 from rest_framework import serializers
 from .models import Map, Structure, SubStructure, StructureUnit, Register, DataType
 from django.contrib.auth.models import User
-
-
-class MapSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Map
-        fields = '__all__'
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 
 class DataTypeSerializer(serializers.ModelSerializer):
@@ -30,24 +25,27 @@ class StructureSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'registers', 'input_registers_number', 'holding_registers_number']
 
 
-class SubStructureSerializer(serializers.ModelSerializer):
+class SubStructureSerializer(WritableNestedModelSerializer):
     structure = StructureSerializer()
 
     class Meta:
         model = SubStructure
         fields = '__all__'
 
-    def create(self, validated_data):
-        structure_data = validated_data.pop('structure')
-        structure = Structure.objects.get(name=structure_data['name'])
-        substructure = SubStructure.objects.create(structure=structure, **validated_data)
-        return substructure
+
+class MapSerializer(WritableNestedModelSerializer):
+    sub_structure = SubStructureSerializer(many=True)
+    structures_number = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Map
+        fields = '__all__'
 
 
 class StructureUnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = StructureUnit
-        fields = '__all__'
+        fields = ['id', 'name', 'sub_structure', 'structures_number']
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

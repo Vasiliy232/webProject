@@ -1,4 +1,4 @@
-from django.db.models import Sum, Case, When, F, PositiveIntegerField, Prefetch
+from django.db.models import Sum, Case, When, F, PositiveIntegerField, Count
 from rest_framework import mixins, viewsets
 from .models import (
     Map,
@@ -23,10 +23,20 @@ class MapMixinViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
-    queryset = Map.objects.all()
+    queryset = Map.objects.all().prefetch_related('sub_structure__structure__registers').order_by('-id')
     serializer_class = MapSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+            structures_number=Count(
+                'sub_structure__structure',
+                distinct=True,
+                output_field=PositiveIntegerField()
+            )
+        )
 
 
 class StructureMixinViewSet(
@@ -75,6 +85,11 @@ class SubStructureMixinViewSet(
     queryset = SubStructure.objects.all().prefetch_related('structure__registers').order_by('-id')
     serializer_class = SubStructureSerializer
     pagination_class = SubStructurePagination
+
+    def paginate_queryset(self, queryset):
+        if self.request.query_params.get('no_pagination') == 'true':
+            self.pagination_class = None
+        return super().paginate_queryset(queryset)
 
 
 class StructureUnitMixinViewSet(

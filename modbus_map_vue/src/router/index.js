@@ -6,6 +6,7 @@ const Registration = () => import('../components/Registration.vue');
 const Login = () => import('../pages/Login.vue');
 const StructureDetail = () => import('../pages/StructureDetail.vue');
 const SubStructureList = () => import('../pages/SubStructureList.vue');
+const MapList = () => import('../pages/MapList.vue');
 
 const routes = [
   { path: '/structures', component: StructureList },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/structures/:id', name: 'structure-detail', component: StructureDetail },
   { path: '/sub_structures', component: SubStructureList },
+  { path: '/maps', component: MapList },
 ];
 
 export const router = createRouter({

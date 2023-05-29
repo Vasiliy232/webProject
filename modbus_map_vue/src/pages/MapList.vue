@@ -1,10 +1,12 @@
 <script setup>
-  import { onMounted, reactive, ref } from 'vue';
+  import { onMounted, reactive, ref, toRaw } from 'vue';
   import { useStore } from 'vuex';
+  import EditStructure from '../components/EditStructure.vue';
 
   const store = useStore();
 
   const url = ref('http://127.0.0.1:8000/api/structure/');
+  const editMap = ref();
 
   const mapList = reactive({
     maps: []
@@ -61,6 +63,29 @@
     });
     await loadMaps(url);
   };
+
+  const openEditWindow = (map) => {
+    editMap.value.props.structureData.value = toRaw(map);
+    editMap.value.props.registersData.value = substructureList.substructures;
+    editMap.value.show();
+  };
+
+  const updateMap = async (newMap) => {
+    const url = 'http://127.0.0.1:8000/api/map/'
+    const accessToken = localStorage.getItem('access_token');
+    await fetch(url + `${ newMap.value.id }/`, {
+      method: 'PATCH',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Token ${ accessToken }`
+      },
+      body: JSON.stringify({
+        name: newMap.value.name,
+        sub_structure: newMap.value.sub_structure
+      })
+    });
+    await loadMaps();
+  };
 </script>
 
 <template>
@@ -77,11 +102,14 @@
         <tbody>
           <tr v-for="map in mapList.maps">
             <th scope='row'>
-              <router-link :to="{ name: 'structure-detail', params: { id: map.id } }">
+              <router-link :to="{ name: 'map-detail', params: { id: map.id } }">
                 {{ map.name }}
               </router-link>
             </th>
             <td>{{ map.structures_number }}</td>
+            <button v-if='store.state.isAuthenticated' v-on:click.prevent='openEditWindow(map)'>
+              Edit
+            </button>
             <button v-if='store.state.isAuthenticated' v-on:click.prevent='deleteMap(map.id)'>
               Delete
             </button>
@@ -109,6 +137,7 @@
             </div>
           </form>
         </div>
+        <EditStructure ref='editMap' v-on:structure-update='updateMap' />
       </div>
     </div>
   </div>

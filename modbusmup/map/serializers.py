@@ -16,7 +16,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class StructureSerializer(serializers.ModelSerializer):
+class StructureSerializer(WritableNestedModelSerializer):
+    registers = RegisterSerializer(many=True)
     input_registers_number = serializers.ReadOnlyField()
     holding_registers_number = serializers.ReadOnlyField()
 

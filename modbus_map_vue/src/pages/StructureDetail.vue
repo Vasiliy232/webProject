@@ -21,7 +21,7 @@
     const resp_reg = await fetch('http://127.0.0.1:8000/api/register/?no_pagination=true');
     const registers = await resp_reg.json();
     for (const index in registers) {
-      if (structure.registers.includes(registers[index].id)) {
+      if (structure.registers.some(elem => elem.id === registers[index].id)) {
         structureDetail.registers.push(registers[index])
       }
     }

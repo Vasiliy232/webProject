@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, toRaw, toRefs } from 'vue';
 
   const props = defineProps({
     structureData: {
@@ -13,23 +13,24 @@
   });
 
   const modalShow = ref(false);
-  const newStructure = ref({});
   const editModal = ref();
+
+  let newStructure = ({});
 
   const emits = defineEmits(['structure-update']);
 
   const show = () => {
-    newStructure.value = props.structureData;
+    newStructure = Object.assign({}, props.structureData);
     modalShow.value = true;
   };
   const hide = () => {
     modalShow.value = false;
   };
   const resetForm = () => {
-    newStructure.value = {};
+    newStructure = {};
   };
   const submitForm = () => {
-    emits('structure-update', props.structureData);
+    emits('structure-update', newStructure);
     modalShow.value = false;
   };
 
@@ -51,9 +52,16 @@
       <b-form-group label='Name'>
         <b-form-input v-model='newStructure.value.name'></b-form-input>
       </b-form-group>
-      <b-form-group label='Registers'>
+      <b-form-group v-if="newStructure.value.registers" label='Registers'>
         <b-form-select v-model="newStructure.value.registers" style='width: 29rem;' multiple>
-          <b-form-select-option v-for='register in registersData.value' :key='register.id' v-bind:value="register.id">
+          <b-form-select-option v-for='register in registersData.value' :key='register.id' v-bind:value="register">
+            {{ register.name }}
+          </b-form-select-option>
+        </b-form-select>
+      </b-form-group>
+      <b-form-group v-else-if="newStructure.value.sub_structure" label='Substructures'>
+        <b-form-select v-model="newStructure.value.sub_structure" style='width: 29rem;' multiple>
+          <b-form-select-option v-for='register in registersData.value' :key='register.id' v-bind:value="register">
             {{ register.name }}
           </b-form-select-option>
         </b-form-select>

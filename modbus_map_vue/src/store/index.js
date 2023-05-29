@@ -27,7 +27,7 @@ export const store = createStore({
     },
     async logoutUser ({ commit }) {
       const accessToken = localStorage.getItem('access_token');
-      const resp = await fetch('http://127.0.0.1:8000/user/logout/', {
+      await fetch('http://127.0.0.1:8000/user/logout/', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
